@@ -1,5 +1,6 @@
 package com.hakkicaner.instacream;
 
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,23 +15,45 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
 public class PhotosActivity extends ActionBarActivity {
 
-    public static final String CLIENT_ID = "";
+    private SwipeRefreshLayout swipeContainer;
     private ArrayList<InstagramPhoto> instagramPhotos;
     private InstagramPhotosAdapter aPhotos;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photos);
-        instagramPhotos = new ArrayList<>();
+
+        swipeContainer = (SwipeRefreshLayout) findViewById(R.id.swipeContainer);
+        // Setup refresh listener which triggers new data loading
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                swipeContainer.setRefreshing(true);
+                aPhotos.notifyDataSetChanged();
+                aPhotos.clear();
+                fetchPopularPhotos();
+                swipeContainer.setRefreshing(false);
+            }
+        });
+        // Configure the refreshing colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
+            android.R.color.holo_green_light,
+            android.R.color.holo_orange_light,
+            android.R.color.holo_red_light);
+
+        instagramPhotos = new ArrayList<InstagramPhoto>();
         aPhotos = new InstagramPhotosAdapter(this, instagramPhotos);
         ListView lvPhotos = (ListView) findViewById(R.id.lvPhotos);
         lvPhotos.setAdapter(aPhotos);
@@ -48,6 +71,7 @@ public class PhotosActivity extends ActionBarActivity {
                 JSONArray photosJson = null;
                 try {
                     photosJson = response.getJSONArray("data");
+                    Log.i("DEBUG", photosJson.toString());
                     for (int i = 0; i < photosJson.length(); i++) {
                         JSONObject photoJson = photosJson.getJSONObject(i);
                         InstagramPhoto instagramPhoto = new InstagramPhoto();
@@ -73,8 +97,8 @@ public class PhotosActivity extends ActionBarActivity {
     }
 
     private static final String formatCreatedTime(String epoch) {
-        SimpleDateFormat sdf = new SimpleDateFormat("@MMM d, hha", Locale.ENGLISH);
-        return sdf.format(new Date(Long.valueOf(epoch)));
+        SimpleDateFormat sdf = new SimpleDateFormat("@MMM d hha", Locale.ENGLISH);
+        return sdf.format(new Date(Long.parseLong(epoch)));
     }
 
     @Override

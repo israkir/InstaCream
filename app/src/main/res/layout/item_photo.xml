@@ -2,14 +2,21 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
-    <ImageView
+    <com.makeramen.roundedimageview.RoundedImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/ivAvatar"
+        android:scaleType="fitCenter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/ivAvatar"
         android:adjustViewBounds="true"
         android:paddingBottom="10dp"
         android:paddingLeft="4dp"
-        android:paddingTop="20dp" />
+        android:paddingTop="20dp"
+        app:riv_corner_radius="30dip"
+        app:riv_border_width="0dip"
+        app:riv_mutate_background="true"
+        app:riv_tile_mode="repeat"
+        app:riv_oval="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -71,6 +78,6 @@
         android:id="@+id/tvCreatedTime"
         android:layout_toRightOf="@+id/ivAvatar"
         android:paddingLeft="4dp"
-        android:paddingTop="57dp"/>
+        android:paddingTop="40dp"/>
 
 </RelativeLayout>
